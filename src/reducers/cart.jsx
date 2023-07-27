@@ -1,4 +1,5 @@
-export const initialState = [];
+export const cartInitialState = [];
+
 export const cartReducer = (state, action) => {
   const { type: actionType, payload: actionPayload } = action;
 
@@ -28,7 +29,7 @@ export const cartReducer = (state, action) => {
     }
 
     case "CLEAR_CART": {
-      return initialState;
+      return cartInitialState;
     }
   }
   return state;
