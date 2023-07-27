@@ -1,41 +1,66 @@
-import { createContext, useState } from "react";
+import { createContext, useReducer, useState } from "react";
 
 export const CartContext = createContext();
 
-export function CartProvider({ children }) {
-  const [cart, setCart] = useState([]);
+const initialState = [];
+const reducer = (state, action) => {
+  const { type: actionType, payload: actionPayload } = action;
 
-  const addToCart = (product) => {
-    //si el mismo producto está en el carrito, se suma la cantidad
-    const productInCartIndex = cart.findIndex((item) => item.id === product.id);
-    if (productInCartIndex >= 0) {
-      const newCart = structuredClone(cart);
-      newCart[productInCartIndex].quantity += 1;
-      return setCart(newCart);
+  switch (actionType) {
+    case "ADD_TO_CART": {
+      const { id } = actionPayload;
+      const productInCartIndex = state.findIndex((item) => item.id === id);
+
+      if (productInCartIndex >= 0) {
+        const newState = structuredClone(state);
+        newState[productInCartIndex].quantity += 1;
+        return newState;
+      }
+
+      return [
+        ...state,
+        {
+          ...actionPayload, //product
+          quantity: 1,
+        },
+      ];
     }
 
-    //si el producto no está en el carrito (añadir producto)
-    setCart((prevState) => [
-      ...prevState,
-      {
-        ...product,
-        quantity: 1,
-      },
-    ]);
-  };
+    case "REMOVE_FROM_CART": {
+      const { id } = actionPayload;
+      return state.filter((item) => item.id !== id);
+    }
 
-  //quitar elemento del carrito
-  const removeFromCart = (product) => {
-    setCart((prevState) => prevState.filter((item) => item.id !== product.id));
-  };
+    case "CLEAR_CART": {
+      return initialState;
+    }
+  }
+  return state;
+};
 
-  const clearCart = () => {
-    setCart([]);
-  };
+export function CartProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const addToCart = (product) =>
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: product,
+    });
+
+  const removeFromCart = (product) =>
+    dispatch({
+      type: "REMOVE_FROM_CART",
+      payload: product,
+    });
+
+  const clearCart = () =>
+    dispatch({
+      type: "CLEAN_CART",
+    });
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart }}
+      value={{ cart: state, addToCart, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>
