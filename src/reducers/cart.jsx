@@ -39,7 +39,7 @@ export const cartReducer = (state, action) => {
       return newState;
     }
 
-    case "CLEAR_CART": {
+    case "CLEAN_CART": {
       updateLocalStorage([]);
       return [];
     }
