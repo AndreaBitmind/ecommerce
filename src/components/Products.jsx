@@ -1,5 +1,5 @@
 import { useCart } from "../hooks/useCart";
-import { AddToCartIcon, RemoveFromCartIcon } from "./icons";
+import { AddToCartIcon, RemoveFromCartIcon } from "./Icons";
 import "./Products.css";
 
 function Products({ products }) {
